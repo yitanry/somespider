@@ -21,13 +21,14 @@ class Douban(object):
         self.driver = wd.Chrome()
         self.driver.maximize_window()
         self.driver.get(url)
-        with open('./src/item_page.html', 'w', encoding='utf-8') as f:
-            f.write(self.driver.page_source)
+        # with open('./src/item_page.html', 'w', encoding='utf-8') as f:
+            # f.write(self.driver.page_source)
         # self.driver.close()
-        with open('./src/item_page.html', 'r', encoding='utf-8') as f:
-            self.html = f.read()
+        # with open('./src/item_page.html', 'r', encoding='utf-8') as f:
+            # self.html = f.read()
+        self.html = self.driver.page_source
         self.data = {}
-        self.basic_dir = os.path.abspath('./')
+        # self.basic_dir = os.path.abspath('./')
         self.header = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"}
 
@@ -109,9 +110,18 @@ class Douban(object):
 
         :return:
         """
-        if not os.path.exists(f'./{self.data["movie_name"]}'):
-            os.mkdir(self.data['movie_name'])
-        os.chdir(os.path.abspath(f'./{self.data["movie_name"]}'))
+        # if not os.path.exists('./item_src'):
+            # os.mkdir('./item_src')
+        # self.basic_dir = os.path.abspath('./item_src')
+        # os.chdir(self.basic_dir)
+        # if ':' not in self.data['movie_name'] and '：' not in self.data['movie_name']:
+            # _dir_name = self.data['movie_name']
+        # else:
+            # _dir_name = ''.join(self.data['movie_name'].split(':'))
+        _dir_name = self.data['movie_name'].split('：')[0].split(':')[0]
+        if not os.path.exists(f'./{_dir_name}'):
+            os.mkdir(_dir_name)
+        os.chdir(os.path.abspath(f'./{_dir_name}'))
         self.item_abs_path = os.path.abspath('./')
         for dir_name in ['./posters', './main_team', './stills']:
             if not os.path.exists(dir_name):
@@ -123,7 +133,7 @@ class Douban(object):
         # elif not os.path.exists('./stills'):
         #     os.mkdir('./stills')
 
-    def webp_2_jpeg(self, bname, aname):
+    def webp_2_png(self, bname, aname):
         """
         webp 转 jpg
         :param bname: 转换前文件名，可以包含路径
@@ -145,7 +155,7 @@ class Douban(object):
         if res.status_code == 200:
             with open(f'./{type}/{name}.webp', 'wb') as w:
                 w.write(res.content)
-            self.webp_2_jpeg(f'./{type}/{name}.webp', f'./{type}/{name}.jpg')
+            self.webp_2_png(f'./{type}/{name}.webp', f'./{type}/{name}.png')
 
     def get_element_page(self, url):
         """
@@ -217,6 +227,7 @@ class Douban(object):
         self.download_main_team_pic()
         self.download_stills()
         self.store_item_info()
+        os.chdir('../../')
         self.driver.close()
 
 
