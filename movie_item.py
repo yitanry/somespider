@@ -5,6 +5,7 @@ import requests
 import os
 import time
 import selenium.webdriver as wd
+from selenium.webdriver.chrome.options import Options
 from PIL import Image as im
 
 
@@ -15,10 +16,13 @@ class Douban(object):
         初始化item页信息
         :param url: 需要抓取的豆瓣电影页
         """
+        chrome_options = Options()
+        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument('--headless')
         self.target_url = url
         if not os.path.exists('./'):
             os.mkdir('./src')
-        self.driver = wd.Chrome()
+        self.driver = wd.Chrome(chrome_options=chrome_options)
         self.driver.maximize_window()
         self.driver.get(url)
         # with open('./src/item_page.html', 'w', encoding='utf-8') as f:
@@ -118,7 +122,7 @@ class Douban(object):
             # _dir_name = self.data['movie_name']
         # else:
             # _dir_name = ''.join(self.data['movie_name'].split(':'))
-        _dir_name = self.data['movie_name'].split('：')[0].split(':')[0]
+        _dir_name = self.data['movie_name'].split('：')[0].split(':')[0].split('？')[0].split('?')[0]
         if not os.path.exists(f'./{_dir_name}'):
             os.mkdir(_dir_name)
         os.chdir(os.path.abspath(f'./{_dir_name}'))
